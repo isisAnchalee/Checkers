@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-class MoveNotValid < StandardError
+class InvalidMoveError < StandardError
 end
 
 class Piece
 
-	attr_accessor :board, :is_king
+	attr_accessor :board, :is_king, :current_pos
 	attr_reader :color, :current_pos
 
 	def initialize(board, pos, color)
@@ -22,7 +22,7 @@ class Piece
 	def perform_slide(new_pos)
 		if valid_slide?(current_pos, new_pos)
 			@board.move_piece(current_pos, new_pos)
-			set_new_current_position(new_pos)
+			current_pos = new_pos
 			maybe_promote
 		end
 	end
@@ -31,14 +31,10 @@ class Piece
 		if valid_jump?(current_pos, new_pos)
 			@board.remove_piece(@board.get_middle_square(current_pos, new_pos))
 			@board.move_piece(current_pos, new_pos)
-			set_new_current_position(new_pos)
+			current_pos = new_pos
 			maybe_promote
 		end
 	end
-
-	def set_new_current_position(new_pos)
-    @current_pos = new_pos
-  end
 
 	def maybe_promote
 		@is_king = true if color == :red && current_pos.first == 7
@@ -51,7 +47,7 @@ class Piece
     if @board[new_pos].nil?
     	all_possible_slides(color).include?(new_pos)
     else
-      raise MoveNotValid.new("Cannot move here!")
+      raise InvalidMoveError.new("Cannot move here!")
     end
   end
 
@@ -59,7 +55,7 @@ class Piece
     if @board[new_pos].nil? && @board.check_middle_square(old_pos, new_pos, self.color)
       all_possible_jumps(color).include?(new_pos)
     else
-      raise MoveNotValid.new("Cannot jump here!")
+      raise InvalidMoveError.new("Cannot jump here!")
     end
   end
 

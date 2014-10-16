@@ -120,6 +120,6 @@ class Board
 end
 
 test = Board.new
-
+test[[5,1]].perform_slide([4,0])
 test.display_board
 
