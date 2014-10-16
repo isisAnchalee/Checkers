@@ -92,11 +92,11 @@ class Board
 
 end
 
-test = Board.new
+# test = Board.new
 
-test[[5, 3]].perform_slide([4, 2])
-test[[4, 2]].perform_slide([3, 1])
-test[[2, 0]].perform_jump([4, 2])
-test[[5,1]].perform_jump([3, 3])
+# test[[5, 3]].perform_slide([4, 2])
+# test[[4, 2]].perform_slide([3, 1])
+# test[[2, 0]].perform_jump([4, 2])
+# test[[5,1]].perform_jump([3, 3])
 # test[[3,3]].perform_jump([5, 1])
-test.display_board
+# test.display_board
