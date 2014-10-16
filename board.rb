@@ -21,6 +21,7 @@ class Board
 	end
 
   def display_board
+    system("clear")
     puts 'Welcome to Checkers!'
     puts '   0 1 2 3 4 5 6 7'
     @grid.each_with_index do |val, row_index|
@@ -32,45 +33,12 @@ class Board
     end
   end
 
-  def valid_slide?(old_pos, new_pos, color, is_king)
-    valid_king_slide(old_pos, new_pos) if is_king
-    if self[new_pos].empty?
-      if color == :red
-        valid_red_slide(old_pos, new_pos)
-      else
-        valid_black_slide(old_pos, new_pos)
-      end
-    else
-      raise "Cannot move here!"
-    end
-  end
-
-  def valid_red_slide(old_pos, new_pos)
-
-  end
-
-  def valid_black_slide
-
-  end
-
-  def valid_king_slide(old_pos, new_pos)
-
-  end
-
-  def valid_jump?(old_pos, new_pos)
-  end
-
   def move_piece(start_pos, end_pos)
     start_piece = self[start_pos]
     self[end_pos] = start_piece
     self[start_pos] = nil
   end
 
-  def on_board?(pos)
-    row, col = pos
-    row.between?(0, size - 1) && col.between?(0, size - 1)
-  end
-  
   def [](pos)
     row, col = pos
     @grid[row][col]
@@ -94,7 +62,6 @@ class Board
         end
       end
     end
-
 
     def get_piece_color(el, row_index, col_index)
       if !el.nil?
@@ -127,5 +94,9 @@ end
 
 test = Board.new
 
-test.move_piece([5,2],[4,0])
+test[[5, 3]].perform_slide([4, 2])
+test[[4, 2]].perform_slide([3, 1])
+test[[2, 0]].perform_jump([4, 2])
+test[[5,1]].perform_jump([3, 3])
+# test[[3,3]].perform_jump([5, 1])
 test.display_board
