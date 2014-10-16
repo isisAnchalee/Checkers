@@ -21,9 +21,24 @@ class Board
 	end
 
   def display_board
-    each_piece do |el, row_index, col_index|
-      get_piece_color(el, row_index, col_index) 
+    @grid.each_with_index do |val, row_index|
+      val.each_with_index do |val2, col_index|
+       print get_piece_color(@grid[row_index][col_index], row_index, col_index) 
+      end
+      puts
     end
+  end
+
+  def valid_slide?(old_pos, new_pos)
+
+  end
+
+  def valid_jump?(old_pos, new_pos)
+  end
+
+  def on_board?(pos)
+    row, col = pos
+    row.between?(0, size - 1) && col.between?(0, size - 1)
   end
 
 	private
@@ -36,6 +51,18 @@ class Board
       elsif row.even? && col.odd? || row.odd? && col.odd?
         if row.between?(0,2)
           @grid[row][col] = Piece.new(self, [row, col], :red)
+        end
+      end
+    end
+
+    def place_black_or_red_piece(row, col)
+      if row.between?(5,7)
+        if row.odd? && col.odd? || row.even? && col.even?
+          @grid[row][col] = Piece.new(self, [row, col], :black)
+        end
+      elsif row.between?(0,2)
+        if row.odd? && col.odd? || row.even? && col.even?
+           @grid[row][col] = Piece.new(self, [row, col], :red)
         end
       end
     end
@@ -68,7 +95,7 @@ class Board
       end
     end
 
-    
+
 
 end
 
