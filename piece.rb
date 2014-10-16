@@ -1,22 +1,30 @@
-require_relative 'board.rb'
+# -*- coding: utf-8 -*-
+# require_relative 'board.rb'
 
 class Piece
-	WHITE_DELTAS = []
 
-	BLACK_DELTAS = []
+	BLACK_DELTAS = [[-1, -1], [-1, 1]]
+	RED_DELTAS = [[1, 1], [1, -1]]
+
+	attr_accessor :board
+	attr_reader :piece_unicode, :color
+
 
 	def initialize(board, pos, color)
 		@board = board
 		@current_pos = pos
 		@color = color
 		@is_king = false
+		@piece_unicode = (@color == :red ? "🔴" : "⚫")
 	end
 
 
 	def perform_slide(new_pos)
+		
 	end
 
 	def perform_jump(new_pos)
+
 	end
 
 	def combine_pos(old_pos, new_pos)
