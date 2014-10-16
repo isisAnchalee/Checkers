@@ -21,39 +21,67 @@ class Board
 	end
 
   def display_board
+    puts 'Welcome to Checkers!'
+    puts '   0 1 2 3 4 5 6 7'
     @grid.each_with_index do |val, row_index|
+      print "#{row_index} "
       val.each_with_index do |val2, col_index|
-       print get_piece_color(@grid[row_index][col_index], row_index, col_index) 
+        print get_piece_color(@grid[row_index][col_index], row_index, col_index) 
       end
       puts
     end
   end
 
-  def valid_slide?(old_pos, new_pos)
+  def valid_slide?(old_pos, new_pos, color, is_king)
+    valid_king_slide(old_pos, new_pos) if is_king
+    if self[new_pos].empty?
+      if color == :red
+        valid_red_slide(old_pos, new_pos)
+      else
+        valid_black_slide(old_pos, new_pos)
+      end
+    else
+      raise "Cannot move here!"
+    end
+  end
+
+  def valid_red_slide(old_pos, new_pos)
+
+  end
+
+  def valid_black_slide
+
+  end
+
+  def valid_king_slide(old_pos, new_pos)
 
   end
 
   def valid_jump?(old_pos, new_pos)
   end
 
+  def move_piece(start_pos, end_pos)
+    start_piece = self[start_pos]
+    self[end_pos] = start_piece
+    self[start_pos] = nil
+  end
+
   def on_board?(pos)
     row, col = pos
     row.between?(0, size - 1) && col.between?(0, size - 1)
   end
-
+  
+  def [](pos)
+    row, col = pos
+    @grid[row][col]
+  end
+  
+  def []=(pos, piece)
+    row, col = pos
+    @grid[row][col] = piece
+  end
+  
 	private
-
-    def place_black_or_red_piece(row, col)
-      if row.odd? && col.odd? || row.even? && col.even?
-        if row.between?(5,7)
-          @grid[row][col] = Piece.new(self, [row, col], :black)
-        end
-      elsif row.even? && col.odd? || row.odd? && col.odd?
-        if row.between?(0,2)
-          @grid[row][col] = Piece.new(self, [row, col], :red)
-        end
-      end
-    end
 
     def place_black_or_red_piece(row, col)
       if row.between?(5,7)
@@ -95,9 +123,9 @@ class Board
       end
     end
 
-
-
 end
 
 test = Board.new
+
+test.move_piece([5,2],[4,0])
 test.display_board

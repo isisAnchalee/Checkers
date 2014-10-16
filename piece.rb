@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+class MoveNotValid < StandardError
+end
 
 class Piece
 
@@ -6,8 +8,7 @@ class Piece
 	RED_DELTAS = [[1, 1], [1, -1]]
 
 	attr_accessor :board
-	attr_reader :piece_unicode, :color, :is_king
-
+	attr_reader :piece_unicode, :color, :is_king, :current_pos
 
 	def initialize(board, pos, color)
 		@board = board
@@ -24,13 +25,35 @@ class Piece
 			color == :red ? red_move_dirs : black_move_dirs
 	end
 
-	def perform_slide(new_pos)
+	def perform_slide(new_pos, color)
 
+	end
+
+	# - on the board
+	# - spot is empty
+	# - is in all possible all possible moves
+
+
+
+	def all_possible_moves(color)
+		all_poss_moves = []
+		deltas = poss_move_deltas(color)
+		deltas.each do |coord|
+			all_poss_moves += combine_pos(current_pos, coord)
+		end
+
+		all_poss_moves.select! do |coord|
+			board.on_board?(coord)
+		end
 	end
 
 	def perform_jump(new_pos)
 
 	end
+
+	def set_new_current_position(new_pos)
+    @current_pos = new_pos
+  end
 
 	def maybe_promote
 	end
@@ -40,3 +63,4 @@ class Piece
 	end
 
 end
+
