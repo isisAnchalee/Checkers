@@ -7,10 +7,10 @@ class Board
   attr_accessor :grid
   attr_reader :size
 
-  def initialize(size = 8)
+  def initialize(size = 8, dup = false)
     @size = size
     @grid = Array.new(size) { Array.new(size) { nil } }
-    put_pieces_on_board
+    put_pieces_on_board unless dup
   end
 
   def put_pieces_on_board
@@ -76,6 +76,16 @@ class Board
     remove_squares
   end
 
+  def dup
+    new_board = self.class.new(size, true)
+    each_piece do |el, row, col|
+      if !el.nil?
+        new_board[[row, col]] = el.class.new(new_board, [row, col], el.color)
+      end 
+    end
+    new_board
+  end
+
   private
 
     def place_black_or_red_piece(row, col)
@@ -120,6 +130,6 @@ class Board
 end
 
 test = Board.new
-test[[5,1]].perform_slide([4,0])
+p test[[5, 1]].valid_move_seq?([[5, 0]])
 test.display_board
 

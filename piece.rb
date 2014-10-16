@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+require 'byebug'
 class InvalidMoveError < StandardError
 end
 
@@ -24,6 +24,9 @@ class Piece
 			@board.move_piece(current_pos, new_pos)
 			current_pos = new_pos
 			maybe_promote
+			return true
+		else
+			return false
 		end
 	end
 
@@ -33,17 +36,23 @@ class Piece
 			@board.move_piece(current_pos, new_pos)
 			current_pos = new_pos
 			maybe_promote
+			return true
+		else
+			return false
 		end
 	end
 
-	def maybe_promote
-		@is_king = true if color == :red && current_pos.first == 7
-		@is_king = true if color == :black && current_pos.first == 0
+	def perform_moves(move_sequence)
+		if valid_move_seq?(move_sequence)
+			perform_moves!(move_sequence)
+		else
+			raise InvalidMoveError.new("Invalid move sequence!")
+		end
 	end
 
   private
 
-  def valid_slide?(old_pos, new_pos) #add king logic later
+  def valid_slide?(old_pos, new_pos)
     if @board[new_pos].nil?
     	all_possible_slides(color).include?(new_pos)
     else
@@ -92,6 +101,34 @@ class Piece
 			all_poss_jumps << jump_pos if @board.on_board?(jump_pos)
 		end
 		all_poss_jumps
+	end
+
+	def perform_moves!(move_sequence)
+		if move_sequence.count == 1
+			unless perform_slide(move_sequence.first)
+				perform_jump(move_sequence.first)
+			end
+		else
+			move_sequence.each do |sequence|
+				perform_jump(sequence)
+			end
+		end
+	end
+
+	def valid_move_seq?(move_sequence)
+		test_board = @board.dup
+		begin
+			test_board[current_pos].perform_moves!(move_sequence)
+		rescue InvalidMoveError => e
+			puts e. message
+			return false
+		end
+		return true
+	end	
+
+	def maybe_promote
+		@is_king = true if color == :red && current_pos.first == 7
+		@is_king = true if color == :black && current_pos.first == 0
 	end
 
 end
