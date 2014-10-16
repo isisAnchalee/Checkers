@@ -6,18 +6,21 @@ end
 class Piece
 
 	attr_accessor :board, :is_king
-	attr_reader :piece_unicode, :color, :current_pos
+	attr_reader :color, :current_pos
 
 	def initialize(board, pos, color)
 		@board = board
 		@current_pos = pos
 		@color = color
 		@is_king = false
-		@piece_unicode = (@color == :red ? "🔴" : "⚫")
+	end
+
+	def piece_unicode
+		(@color == :red ? "🔴" : "⚫")
 	end
 
 	def perform_slide(new_pos)
-		if valid_slide?(current_pos, new_pos, is_king)
+		if valid_slide?(current_pos, new_pos)
 			@board.move_piece(current_pos, new_pos)
 			set_new_current_position(new_pos)
 			maybe_promote
@@ -25,8 +28,8 @@ class Piece
 	end
 
 	def perform_jump(new_pos)
-		if valid_jump?(current_pos, new_pos, is_king)
-			remove_piece(get_middle_square(current_pos, new_pos))
+		if valid_jump?(current_pos, new_pos)
+			@board.remove_piece(@board.get_middle_square(current_pos, new_pos))
 			@board.move_piece(current_pos, new_pos)
 			set_new_current_position(new_pos)
 			maybe_promote
@@ -42,18 +45,9 @@ class Piece
 		@is_king = true if color == :black && current_pos.first == 0
 	end
 
-	def combine_pos(old_pos, new_pos)
-		[old_pos[0] + new_pos[0], old_pos[1] + new_pos[1]]
-	end
-
-	def on_board?(pos)
-    row, col = pos
-    row.between?(0,7) && col.between?(0,7)
-  end
-
   private
 
-  	def valid_slide?(old_pos, new_pos, is_king) #add king logic later
+  def valid_slide?(old_pos, new_pos) #add king logic later
     if @board[new_pos].nil?
     	all_possible_slides(color).include?(new_pos)
     else
@@ -61,8 +55,8 @@ class Piece
     end
   end
 
-	def valid_jump?(old_pos, new_pos, is_king) #add king logic later
-    if @board[new_pos].nil? && check_middle_square(old_pos, new_pos)
+	def valid_jump?(old_pos, new_pos)
+    if @board[new_pos].nil? && @board.check_middle_square(old_pos, new_pos, self.color)
       all_possible_jumps(color).include?(new_pos)
     else
       raise MoveNotValid.new("Cannot jump here!")
@@ -87,45 +81,21 @@ class Piece
 
 	def all_possible_slides(color)
 		all_poss_slides = []
-		deltas = poss_move_deltas(color)
-
-		deltas.each do |coord|
-			all_poss_slides << combine_pos(current_pos, coord)
-		end
-		all_poss_slides.select! do |coord|
-			on_board?(coord)
+		poss_move_deltas(color).each do |coord|
+			slide_pos = @board.combine_pos(current_pos, coord)
+			all_poss_slides << slide_pos if @board.on_board?(slide_pos)
 		end
 		all_poss_slides
 	end
 
 	def all_possible_jumps(color)
 		all_poss_jumps = []
-		deltas = poss_jump_deltas(color)
 
-		deltas.each do |coord|
-			all_poss_jumps << combine_pos(current_pos, coord)
-		end
-
-		all_poss_jumps.select! do |coord|
-			on_board?(coord)
+		poss_jump_deltas(color).each do |coord|
+			jump_pos = @board.combine_pos(current_pos, coord)
+			all_poss_jumps << jump_pos if @board.on_board?(jump_pos)
 		end
 		all_poss_jumps
-	end
-
-	def remove_piece(pos)
-		@board[pos] = nil
-	end
-
-	def check_middle_square(start_pos, end_pos)
-		remove_squares = combine_pos(start_pos, end_pos)
-		remove_squares.map! {|pos| pos / 2}
-		!@board[remove_squares].nil? && @board[remove_squares].color != self.color
-	end
-
-	def get_middle_square(start_pos, end_pos)
-		remove_squares = combine_pos(start_pos, end_pos)
-		remove_squares.map! {|pos| pos / 2}
-		remove_squares
 	end
 
 end
