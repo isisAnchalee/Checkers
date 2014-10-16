@@ -58,7 +58,7 @@ class Board
         end
       elsif row.between?(0,2)
         if row.odd? && col.odd? || row.even? && col.even?
-           @grid[row][col] = Piece.new(self, [row, col], :red)
+           # @grid[row][col] = Piece.new(self, [row, col], :red)
         end
       end
     end
@@ -92,11 +92,11 @@ class Board
 
 end
 
-# test = Board.new
-
-# test[[5, 3]].perform_slide([4, 2])
-# test[[4, 2]].perform_slide([3, 1])
-# test[[2, 0]].perform_jump([4, 2])
-# test[[5,1]].perform_jump([3, 3])
-# test[[3,3]].perform_jump([5, 1])
-# test.display_board
+test = Board.new
+test[[5, 1]].perform_slide([4, 0])
+test[[4, 0]].perform_slide([3, 1])
+test[[3, 1]].perform_slide([2, 0])
+test[[2, 0]].perform_slide([1, 1])
+test[[1, 1]].perform_slide([0, 0])
+test[[0, 0]].perform_slide([1, 1])
+test.display_board

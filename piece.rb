@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+
 class MoveNotValid < StandardError
 end
 
 class Piece
 
-	attr_accessor :board
-	attr_reader :piece_unicode, :color, :is_king, :current_pos
+	attr_accessor :board, :is_king
+	attr_reader :piece_unicode, :color, :current_pos
 
 	def initialize(board, pos, color)
 		@board = board
 		@current_pos = pos
 		@color = color
-		@is_king = true
+		@is_king = false
 		@piece_unicode = (@color == :red ? "🔴" : "⚫")
 	end
 
@@ -19,6 +20,7 @@ class Piece
 		if valid_slide?(current_pos, new_pos, is_king)
 			@board.move_piece(current_pos, new_pos)
 			set_new_current_position(new_pos)
+			maybe_promote
 		end
 	end
 
@@ -27,6 +29,7 @@ class Piece
 			remove_piece(get_middle_square(current_pos, new_pos))
 			@board.move_piece(current_pos, new_pos)
 			set_new_current_position(new_pos)
+			maybe_promote
 		end
 	end
 
@@ -35,7 +38,8 @@ class Piece
   end
 
 	def maybe_promote
-
+		@is_king = true if color == :red && current_pos.first == 7
+		@is_king = true if color == :black && current_pos.first == 0
 	end
 
 	def combine_pos(old_pos, new_pos)
@@ -51,7 +55,7 @@ class Piece
 
   	def valid_slide?(old_pos, new_pos, is_king) #add king logic later
     if @board[new_pos].nil?
-      all_possible_slides(color).include?(new_pos)
+    	all_possible_slides(color).include?(new_pos)
     else
       raise MoveNotValid.new("Cannot move here!")
     end
