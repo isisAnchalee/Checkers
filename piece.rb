@@ -23,27 +23,38 @@ class Piece
 	end
 
 	def perform_slide(new_pos)
-		if valid_slide?(current_pos, new_pos)
-			@board.move_piece(current_pos, new_pos)
-			current_pos = new_pos
+		p "in perform slide: #{new_pos}"
+		if valid_slide?(@current_pos, new_pos)
+			p "perform_side in valid_slide"
+			@board.move_piece(@current_pos, new_pos)
+			@current_pos = new_pos
 			maybe_promote
+			return true
+		else
+			return false
 		end
 	end
 
 	def perform_jump(new_pos)
-		if valid_jump?(current_pos, new_pos)
-			@board.remove_piece(@board.get_middle_square(current_pos, new_pos))
-			@board.move_piece(current_pos, new_pos)
-			current_pos = new_pos
+		if valid_jump?(@current_pos, new_pos)
+			@board.remove_piece(@board.get_middle_square(@current_pos, new_pos))
+			@board.move_piece(@current_pos, new_pos)
+			@current_pos = new_pos
 			maybe_promote
+			return true
+		else
+			return false
 		end
 	end
 
-	def perform_moves(move_sequence)
-		if valid_move_seq?(move_sequence)
-			perform_moves!(move_sequence)
+	def perform_moves(color, move_sequence)
+
+		if valid_move_seq?(color, move_sequence)
+			self.perform_moves!(move_sequence)
+			return true
 		else
 			raise InvalidMoveError.new("Invalid move sequence!")
+			return false
 		end
 	end
 
@@ -57,10 +68,11 @@ class Piece
 			end
 		end
 		
-	def valid_move_seq?(move_sequence)
-		test_board = @board.dup
+	def valid_move_seq?(color, move_sequence)
+		raise InvalidMoveError.new "You must move your own piece!" unless @color == color
+			test_board = @board.dup
 		begin
-			test_board[current_pos].perform_moves!(move_sequence)
+			test_board[@current_pos].perform_moves!(move_sequence)
 		rescue InvalidMoveError => e
 			puts e. message
 			return false
@@ -72,6 +84,7 @@ class Piece
 
   def valid_slide?(old_pos, new_pos) 
     if @board[new_pos].nil?
+    	p "in valid_slide position is safe"
     	all_possible_slides(color).include?(new_pos)
     else
       raise InvalidMoveError.new("Cannot move here!")
@@ -105,7 +118,7 @@ class Piece
 	def all_possible_slides(color)
 		all_poss_slides = []
 		poss_move_deltas(color).each do |coord|
-			slide_pos = @board.combine_pos(current_pos, coord)
+			slide_pos = @board.combine_pos(@current_pos, coord)
 			all_poss_slides << slide_pos if @board.on_board?(slide_pos)
 		end
 		all_poss_slides
@@ -115,15 +128,15 @@ class Piece
 		all_poss_jumps = []
 
 		poss_jump_deltas(color).each do |coord|
-			jump_pos = @board.combine_pos(current_pos, coord)
+			jump_pos = @board.combine_pos(@current_pos, coord)
 			all_poss_jumps << jump_pos if @board.on_board?(jump_pos)
 		end
 		all_poss_jumps
 	end
 
 	def maybe_promote
-		@is_king = true if color == :red && current_pos.first == 7
-		@is_king = true if color == :black && current_pos.first == 0
+		@is_king = true if color == :red && @current_pos.first == 7
+		@is_king = true if color == :black && @current_pos.first == 0
 	end
 
 end

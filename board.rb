@@ -11,8 +11,8 @@ class Board
   def initialize(size = 8, dup = false)
     @size = size
     @grid = Array.new(size) { Array.new(size) { nil } }
-    @red_pieces = 12
-    @black_pieces = 12
+    @red_pieces = 0
+    @black_pieces = 0
     put_pieces_on_board unless dup
   end
 
@@ -38,10 +38,12 @@ class Board
   end
 
   def move_piece(start_pos, end_pos)
+    p "in move_piece start: #{start_pos} end: #{end_pos}"
     start_piece = self[start_pos]
     start_piece.current_pos = end_pos
     self[end_pos] = start_piece
     self[start_pos] = nil
+    display_board
   end
 
   def on_board?(pos)
@@ -65,9 +67,9 @@ class Board
     puts "removed square!"
   end
 
-  def has_won?
-    return :red if black_pieces == 0
-    return :black if red_pieces == 0
+  def game_over?
+    return true if (@black_pieces == 0 || @red_pieces == 0)
+    return false
   end
 
   def combine_pos(old_pos, new_pos)
@@ -101,11 +103,13 @@ class Board
     def place_black_or_red_piece(row, col)
       if row.between?(5,7)
         if row.odd? && col.odd? || row.even? && col.even?
-          @grid[row][col] = Piece.new(self, [row, col], :black)
+            @grid[row][col] = Piece.new(self, [row, col], :black)
+            @black_pieces += 1
         end
       elsif row.between?(0,2)
         if row.odd? && col.odd? || row.even? && col.even?
           @grid[row][col] = Piece.new(self, [row, col], :red)
+          @red_pieces += 1
         end
       end
     end
@@ -139,7 +143,5 @@ class Board
 
 end
 
-test = Board.new
 
-test.display_board
 
