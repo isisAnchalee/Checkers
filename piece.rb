@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-require 'byebug'
+# encoding: UTF-8
 class InvalidMoveError < StandardError
 end
 
@@ -12,7 +11,7 @@ class Piece
 		@board = board
 		@current_pos = pos
 		@color = color
-		@is_king = false
+		@is_king = true
 	end
 
 	def piece_unicode
@@ -24,9 +23,6 @@ class Piece
 			@board.move_piece(current_pos, new_pos)
 			current_pos = new_pos
 			maybe_promote
-			return true
-		else
-			return false
 		end
 	end
 
@@ -36,9 +32,6 @@ class Piece
 			@board.move_piece(current_pos, new_pos)
 			current_pos = new_pos
 			maybe_promote
-			return true
-		else
-			return false
 		end
 	end
 
@@ -50,9 +43,30 @@ class Piece
 		end
 	end
 
+		def perform_moves!(move_sequence)
+			if move_sequence.count == 1
+				unless perform_slide(move_sequence.first)
+					perform_jump(move_sequence.first)
+				end
+			else
+				move_sequence.each{ |sequence| perform_jump(sequence)}
+			end
+		end
+		
+	def valid_move_seq?(move_sequence)
+		test_board = @board.dup
+		begin
+			test_board[current_pos].perform_moves!(move_sequence)
+		rescue InvalidMoveError => e
+			puts e. message
+			return false
+		end
+		return true
+	end	
+
   private
 
-  def valid_slide?(old_pos, new_pos)
+  def valid_slide?(old_pos, new_pos) 
     if @board[new_pos].nil?
     	all_possible_slides(color).include?(new_pos)
     else
@@ -77,7 +91,7 @@ class Piece
 	end
 
 	def poss_jump_deltas(color)
-		black_dirs = [[-2, 2], [-2, 2]]
+		black_dirs = [[-2, 2], [-2, -2]]
 		red_dirs = [[2, 2], [2, -2]]
 		return black_dirs += red_dirs if self.is_king
 
@@ -103,35 +117,9 @@ class Piece
 		all_poss_jumps
 	end
 
-	def perform_moves!(move_sequence)
-		if move_sequence.count == 1
-			unless perform_slide(move_sequence.first)
-				perform_jump(move_sequence.first)
-			end
-		else
-			move_sequence.each do |sequence|
-				perform_jump(sequence)
-			end
-		end
-	end
-
-	def valid_move_seq?(move_sequence)
-		test_board = @board.dup
-		begin
-			test_board[current_pos].perform_moves!(move_sequence)
-		rescue InvalidMoveError => e
-			puts e. message
-			return false
-		end
-		return true
-	end	
-
 	def maybe_promote
 		@is_king = true if color == :red && current_pos.first == 7
 		@is_king = true if color == :black && current_pos.first == 0
 	end
 
 end
-
-
-

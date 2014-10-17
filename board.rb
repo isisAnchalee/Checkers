@@ -1,15 +1,18 @@
 # encoding: UTF-8
 require 'colorize'
+require 'byebug'
 require_relative 'piece.rb'
 
 class Board
 
-  attr_accessor :grid
+  attr_accessor :grid, :red_pieces, :black_pieces
   attr_reader :size
 
   def initialize(size = 8, dup = false)
     @size = size
     @grid = Array.new(size) { Array.new(size) { nil } }
+    @red_pieces = 12
+    @black_pieces = 12
     put_pieces_on_board unless dup
   end
 
@@ -36,6 +39,7 @@ class Board
 
   def move_piece(start_pos, end_pos)
     start_piece = self[start_pos]
+    start_piece.current_pos = end_pos
     self[end_pos] = start_piece
     self[start_pos] = nil
   end
@@ -56,8 +60,14 @@ class Board
   end
   
   def remove_piece(pos)
+    self[pos] == :red ? @red_pieces -= 1 : @black_pieces -= 1
     self[pos] = nil
     puts "removed square!"
+  end
+
+  def has_won?
+    return :red if black_pieces == 0
+    return :black if red_pieces == 0
   end
 
   def combine_pos(old_pos, new_pos)
@@ -130,6 +140,18 @@ class Board
 end
 
 test = Board.new
-p test[[5, 1]].valid_move_seq?([[5, 0]])
+test[[5, 1]].perform_slide([4, 0])
+test[[4, 0]].perform_slide([3, 1])
+test[[2, 2]].perform_jump([4, 0])
+test[[2, 4]].perform_slide([3, 3])
+test[[5, 5]].perform_slide([4, 4])
+test[[4, 0]].perform_slide([5, 1])
+test[[2, 0]].perform_slide([3, 1])
+test[[1, 1]].perform_slide([2, 0])
+test[[0, 0]].perform_slide([1, 1])
+p test[[4, 4]].perform_moves([[2, 2], [0, 0]])
+# p test[[4, 4]].valid_move_seq?([[2,2],[]])
+# test[[5,1]].perform_slide([4,0])
+
 test.display_board
 
