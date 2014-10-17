@@ -23,9 +23,7 @@ class Piece
 	end
 
 	def perform_slide(new_pos)
-		p "in perform slide: #{new_pos}"
 		if valid_slide?(@current_pos, new_pos)
-			p "perform_side in valid_slide"
 			@board.move_piece(@current_pos, new_pos)
 			@current_pos = new_pos
 			maybe_promote
@@ -84,7 +82,6 @@ class Piece
 
   def valid_slide?(old_pos, new_pos) 
     if @board[new_pos].nil?
-    	p "in valid_slide position is safe"
     	all_possible_slides(color).include?(new_pos)
     else
       raise InvalidMoveError.new("Cannot move here!")

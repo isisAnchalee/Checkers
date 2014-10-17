@@ -38,7 +38,6 @@ class Board
   end
 
   def move_piece(start_pos, end_pos)
-    p "in move_piece start: #{start_pos} end: #{end_pos}"
     start_piece = self[start_pos]
     start_piece.current_pos = end_pos
     self[end_pos] = start_piece
