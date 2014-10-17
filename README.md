@@ -1,6 +1,4 @@
 #Checkers
-========
-
 #=^.^=
 Meow meow meow meow
 
