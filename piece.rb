@@ -1,4 +1,6 @@
 # encoding: UTF-8
+#I blame Github for the wonky indentation in this file. Merrrrrr default tab display set to 8 spaces.
+
 class InvalidMoveError < StandardError
 end
 
