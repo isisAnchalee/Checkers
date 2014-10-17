@@ -11,11 +11,15 @@ class Piece
 		@board = board
 		@current_pos = pos
 		@color = color
-		@is_king = true
+		@is_king = false
 	end
 
 	def piece_unicode
-		(@color == :red ? "🔴" : "⚫")
+		if @is_king 
+			@color == :red ? "💩": "👑"
+		else
+			(@color == :red ? "🔴" : "⚫")
+		end
 	end
 
 	def perform_slide(new_pos)

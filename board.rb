@@ -140,18 +140,6 @@ class Board
 end
 
 test = Board.new
-test[[5, 1]].perform_slide([4, 0])
-test[[4, 0]].perform_slide([3, 1])
-test[[2, 2]].perform_jump([4, 0])
-test[[2, 4]].perform_slide([3, 3])
-test[[5, 5]].perform_slide([4, 4])
-test[[4, 0]].perform_slide([5, 1])
-test[[2, 0]].perform_slide([3, 1])
-test[[1, 1]].perform_slide([2, 0])
-test[[0, 0]].perform_slide([1, 1])
-p test[[4, 4]].perform_moves([[2, 2], [0, 0]])
-# p test[[4, 4]].valid_move_seq?([[2,2],[]])
-# test[[5,1]].perform_slide([4,0])
 
 test.display_board
 
