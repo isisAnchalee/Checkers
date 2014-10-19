@@ -35,10 +35,6 @@ class Game
     exit
   end
 
-  def switch_turn
-    @current_turn = @current_turn == :red ? :black : :red
-  end
-
   private
   
     def save_file
@@ -80,6 +76,10 @@ class Game
       switch_turn
       puts "Congrats, #{@current_turn.capitalize} wins!"
     end
+
+  def switch_turn
+    @current_turn = @current_turn == :red ? :black : :red
+  end
 
 end
 

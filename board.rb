@@ -1,6 +1,5 @@
 # encoding: UTF-8
 require 'colorize'
-require 'byebug'
 require_relative 'piece.rb'
 
 class Board
